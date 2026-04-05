@@ -7,8 +7,8 @@ from collections import defaultdict
 #  CONFIGURE YOUR WORD LIST PATHS HERE
 # ══════════════════════════════════════════════════════════════════════════════
 
-ANSWERS_PATH = "data/allowed_words.txt"      # words the game will pick from
-GUESSES_PATH = "data/possible_words.txt"      # full vocabulary used for entropy scoring
+ANSWERS_PATH = "data/possible_words.txt"      # words the game will pick from
+GUESSES_PATH = "data/allowed_words.txt"      # full vocabulary used for entropy scoring
                                    # (should be a superset of ANSWERS_PATH)
 
 TOP_N        = 5                   # how many entropy suggestions to show
