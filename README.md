@@ -1,94 +1,137 @@
-# 🎯 AI Wordle Game
+# 🎯 AI Wordle Game — Entropy Edition
 
-
-## 📌 Description
-AI-based Wordle game using Bayes Theorem and information theory for intelligent word prediction. This project applies solvers to Wordle and Dungleon using the approach popularized by 3Blue1Brown.
+An interactive terminal Wordle game with a built-in AI assistant powered by **information theory and entropy**. After every guess, the solver tells you which words are the best next moves — ranked by how many bits of information they are expected to reveal.
 
 ---
 
 ## 👥 Team Members
-1. Harshit Rajesh Benke  
-2. Piyush Kumar Thakur  
-3. Abhishek Kumar  
-4. Rupesh Singh Rana  
-5. Kattamuri Sri Gayatri  
-6. Katta Keerthi Priya  
-7. Moka Sowmya  
-8. Bangari Sri Joshna  
+
+1. Harshit Rajesh Benke
+2. Piyush Kumar Thakur
+3. Abhishek Kumar
+4. Rupesh Singh Rana
+5. Kattamuri Sri Gayatri
+6. Katta Keerthi Priya
+7. Moka Sowmya
+8. Bangari Sri Joshna
 
 ---
 
-## ⚙️ Features
-- Solves Wordle puzzles using information theory and Bayes Theorem.
-- Supports both Wordle and Dungleon games.
-- Includes pre-computed optimal guesses and simulations.
-- Exposes various command-line arguments to customize simulations (e.g., hard mode, optimizing for uniform distribution).
+## ⚙️ How It Works
+
+The AI assistant uses **Shannon entropy** (H = −Σ p·log₂p) to score every possible guess before you type anything.
+
+For each candidate word it asks: *"If I guessed this word, how many different colour patterns could I see, and how evenly would those patterns split the remaining answer pool?"* The word that produces the most even split — and therefore the highest expected information gain in **bits** — is ranked first.
+
+After you submit a guess, the game:
+1. Shows how many **bits** your guess actually gained (e.g. `+3.46 bits`).
+2. Filters the answer pool down to only words still consistent with the colour pattern.
+3. Re-scores every word in the vocabulary against the new, smaller pool.
+
+This is the same approach explained by [3Blue1Brown on YouTube](https://www.youtube.com/watch?v=v68zYyaEmEA).
+
+### Pattern encoding
+
+Each of the five tiles is Green (2), Yellow (1), or Gray (0). The game encodes the five-tile result as a single base-3 integer (range 0–242), which makes pattern lookup and filtering very fast.
+
+### Precomputed matrix
+
+On startup the game builds a `vocabulary × answers` pattern matrix — every possible (guess, answer) pair is computed once and stored as a bytearray. All entropy calculations during play are simple lookups into this table, so suggestions appear instantly.
 
 ---
 
 ## 🚀 How to Run
 
-### Requirements
-- Install the latest version of [Python 3.X][python-download-url] (at least version 3.10).
-- Install the required packages:
+### 1. Requirements
 
+- **Python 3.10 or newer** — download from [python.org](https://www.python.org/downloads/)
+- No external packages are required. The game uses only the Python standard library (`math`, `random`, `collections`, `time`).
+
+### 2. Clone or download the project
 ```bash
-pip install -r requirements.txt
+git clone 
+cd Wordle-Game-main
 ```
 
-### Usage
-To print an exhaustive list of command-line arguments, run:
+Or unzip the downloaded archive and open a terminal inside the `Wordle-Game-main` folder.
 
-```bash
-python simulations.py --help
+### 3. Check the data files are present
+Wordle-Game-main/
+├── wordle.py
+└── data/
+├── allowed_words.txt   ← answer pool  (~2 300 words)
+└── possible_words.txt  ← full vocabulary for guessing (~12 000 words)
+
+Both files are included in the repository. If you move them, update the paths at the top of `wordle.py`:
+```python
+ANSWERS_PATH = "data/allowed_words.txt"
+GUESSES_PATH = "data/possible_words.txt"
 ```
 
-Choose the game with `--game-name`:
-
+### 4. Start the game
 ```bash
-python simulations.py --game-name wordle
+python wordle.py
 ```
 
-```bash
-python simulations.py --game-name dungleon
-```
+**First launch only** — the game precomputes ~27 MB of pattern data (~12 000 × 2 300 pairs). This takes roughly 30–90 seconds depending on your machine. Subsequent rounds in the same session are instant because the matrix is kept in memory.
 
-Alternatively, you can run the solver through a Jupyter notebook [`wordle_solver.ipynb`][colab-notebook]
-[![Open In Colab][colab-badge]][colab-notebook]
+---
+
+## 🎮 Playing the Game
+──────────────────────────────────────────────────
+W O R D L E   +   E N T R O P Y
+──────────────────────────────────────────────────
+Answer pool : 2,309 words   Starting entropy: 11.17 bits
+Vocabulary  : 12,972 words
+Top 5 suggestions  (expected bits gained):
+
+SOARE  ████████████  6.371 bits    guess
+RAISE  ███████████░  6.236 bits  ✓ answer
+ROATE  ███████████░  6.210 bits    guess
+...
+
+Guess 1/6: raise
+
+- Type any valid 5-letter word and press Enter.
+- The board updates with colour tiles: 🟩 Green = right letter, right spot · 🟨 Yellow = right letter, wrong spot · ⬛ Gray = not in word.
+- The AI suggestions update after every guess.
+- `✓ answer` next to a suggestion means it is still a valid solution, not just a good guess.
+- At the end of each game you are asked `Play again? (y/n)`.
+
+---
+
+## 🔧 Configuration
+
+Open `wordle.py` and edit the constants at the top of the file:
+
+| Constant | Default | What it controls |
+|---|---|---|
+| `ANSWERS_PATH` | `"data/allowed_words.txt"` | File the secret word is drawn from |
+| `GUESSES_PATH` | `"data/possible_words.txt"` | Full vocabulary scored for entropy |
+| `TOP_N` | `5` | Number of suggestions shown each turn |
+| `WORD_LEN` | `5` | Word length (change for variants) |
+| `MAX_GUESSES` | `6` | Maximum allowed guesses |
 
 ---
 
 ## 📂 Project Structure
-- `simulations.py`: Main script to run simulations and play the game.
-- `src/`: Contains core source code logic (entropy, patterns, solvers, prior probabilities).
-- `data/`: Contains word lists for Wordle and Dungleon.
+Wordle-Game-main/
+├── wordle.py            — game loop, entropy engine, rendering
+├── data/
+│   ├── allowed_words.txt   — answer pool
+│   └── possible_words.txt  — full guess vocabulary
+├── README.md
+└── LICENSE
 
 ---
 
-## 📈 Results & References
+## 📈 References
 
-Results from the models are shown [on the Wiki][wiki-results].
-
-**References:**
-- 3Blue1Brown, [*Solving Wordle using information theory*][youtube-video], posted on Youtube on February 6, 2022.
-- [`3b1b/videos`][youtube-supplementary-code]: Supplementary code (in Python) accompanying the aforementioned video.
-- [`woctezuma/dungleon-bot`][dungleon-bot]: Application of different solvers to [Dungleon][dungleon-rules].
-- [`woctezuma/Wordle-Bot`][wordle-bot-python-fork]: Mentioning some initial results.
+- 3Blue1Brown, [*Solving Wordle using information theory*](https://www.youtube.com/watch?v=v68zYyaEmEA), YouTube, February 2022.
+- [`3b1b/videos`](https://github.com/3b1b/videos/tree/master/_2022/wordle) — supplementary Python code from the video.
 
 ---
 
 ## 📊 Status
-🚧 Project is ready to use
 
-<!-- Definitions -->
-[codacy]: <https://www.codacy.com/gh/woctezuma/3b1b-wordle-solver/dashboard>
-[codacy-image]: <https://app.codacy.com/project/badge/Grade/ff156cc6b4604ba1a7527448480a118a>
-[python-download-url]: <https://www.python.org/downloads/>
-[colab-notebook]: <https://colab.research.google.com/github/woctezuma/3b1b-wordle-solver/blob/colab/wordle_solver.ipynb>
-[colab-badge]: <https://colab.research.google.com/assets/colab-badge.svg>
-[wiki-results]: <https://github.com/woctezuma/3b1b-wordle-solver/wiki>
-[youtube-video]: <https://www.youtube.com/watch?v=v68zYyaEmEA>
-[youtube-supplementary-code]: <https://github.com/3b1b/videos/tree/master/_2022/wordle>
-[dungleon-bot]: <https://github.com/woctezuma/dungleon-bot>
-[dungleon-rules]: <https://github.com/woctezuma/dungleon/wiki/Rules>
-[wordle-bot-python-fork]: <https://github.com/woctezuma/Wordle-Bot>
+✅ Ready to play — no installation beyond Python 3.10+ required.
