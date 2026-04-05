@@ -275,7 +275,7 @@ def play(answers: list, vocabulary: list,
             f"Starting entropy: {math.log2(len(answers)):.2f} bits")
         print(f"  Vocabulary  : {len(vocabulary):,} words\n")
 
-        print(f"  {DIM}[DEBUG]  Answer → {RESET}{BOLD}{answer.upper()}{RESET}\n")
+       # print(f"  {DIM}[DEBUG]  Answer → {RESET}{BOLD}{answer.upper()}{RESET}\n")
 
         # ── Board ─────────────────────────────────────────────────────────────
         print(f"  {'─'*29}")
