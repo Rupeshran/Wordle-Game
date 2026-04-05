@@ -68,10 +68,20 @@ ANSWERS_PATH = "data/allowed_words.txt"
 GUESSES_PATH = "data/possible_words.txt"
 ```
 
-### 4. Start the game
+### 4. Setup the virtual environment
 ```bash
-python wordle.py
+python -m venv /path
+source /path/bin/activate
+pip install -r requirements.txt
 ```
+
+#### 5. Start precomputing and then run the program
+```bash
+  python precompute.py
+  python wordle2.py
+  deactivate
+```
+(replace python->python3 for MAC and Linux)
 
 **First launch only** — the game precomputes ~27 MB of pattern data (~12 000 × 2 300 pairs). This takes roughly 30–90 seconds depending on your machine. Subsequent rounds in the same session are instant because the matrix is kept in memory.
 
@@ -118,7 +128,11 @@ Open `wordle.py` and edit the constants at the top of the file:
 ```
 Wordle-Game-main/
 ├── wordle.py
-│   └── (game loop, entropy engine, rendering)
+│   └── (This is the prototype version without word freq)
+├── wordle2.py
+│   └── (Final better working AI model)
+├── precompute.py
+│   └── (precompute the frequencies, f-table and probability)
 ├── data/
 │   ├── allowed_words.txt    ← answer pool (~2,300 words the game picks from)
 │   └── possible_words.txt   ← full guess vocabulary (~12,000 words scored for entropy)
@@ -139,4 +153,4 @@ Wordle-Game-main/
 
 ## 📊 Status
 
-✅ Ready to play — no installation beyond Python 3.10+ required.
+✅ Ready to play — Python 3.10+ required.
