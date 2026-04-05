@@ -78,7 +78,7 @@ Results from the models are shown [on the Wiki][wiki-results].
 ---
 
 ## 📊 Status
-🚧 Project in progress
+🚧 Project is ready to use
 
 <!-- Definitions -->
 [codacy]: <https://www.codacy.com/gh/woctezuma/3b1b-wordle-solver/dashboard>
