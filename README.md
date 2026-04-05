@@ -115,13 +115,16 @@ Open `wordle.py` and edit the constants at the top of the file:
 ---
 
 ## 📂 Project Structure
+
 Wordle-Game-main/
-├── wordle.py            — game loop, entropy engine, rendering
+├── wordle.py            — main script (game loop, entropy engine, rendering)
 ├── data/
-│   ├── allowed_words.txt   — answer pool
-│   └── possible_words.txt  — full guess vocabulary
+│   ├── allowed_words.txt   — answer pool (~2,300 words the game picks from)
+│   └── possible_words.txt  — full guess vocabulary (~12,000 words scored for entropy)
 ├── README.md
-└── LICENSE
+├── LICENSE
+└── .gitignore
+
 
 ---
 
